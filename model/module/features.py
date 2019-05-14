@@ -1,7 +1,7 @@
 from torch import nn
 
 
-def _parse_network(network, outputs, pretrained, **kwargs):
+def parse_network(network, outputs, pretrained, **kwargs):
     """Parse network with specified outputs and other arguments.
 
     Parameters

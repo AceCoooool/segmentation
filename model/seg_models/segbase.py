@@ -5,7 +5,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from model.module.features import _parse_network
+from model.module.features import parse_network
 from model.module.basic import JPU
 
 __all__ = ['get_segmentation_model', 'SegBaseModel', 'SegEvalModel', 'MultiEvalModel']
@@ -15,10 +15,12 @@ def get_segmentation_model(model, **kwargs):
     from .fcn import get_fcn
     from .pspnet import get_psp
     from .deeplabv3 import get_deeplab
+    from .danet import get_danet
     models = {
         'fcn': get_fcn,
         'psp': get_psp,
         'deeplab': get_deeplab,
+        'danet': get_danet,
     }
     return models[model](**kwargs)
 
@@ -54,8 +56,8 @@ class SegBaseModel(nn.Module):
             else:
                 raise RuntimeError('unknown backbone: {}'.format(backbone))
 
-            self.base1, self.base2, self.base3 = _parse_network(backbone + '_v1s', outputs,
-                                                                pretrained=pretrained_base, dilated=dilated)
+            self.base1, self.base2, self.base3 = parse_network(backbone + '_v1s', outputs,
+                                                               pretrained=pretrained_base, dilated=dilated)
 
         height = height if height is not None else crop_size
         width = width if width is not None else crop_size

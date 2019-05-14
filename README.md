@@ -7,6 +7,8 @@ This is a sub-project of [pytorch-cv](https://github.com/AceCoooool/pytorch-cv)�
 - [x] FCN
 - [x] PSPNet
 - [x] DeepLabv3
+- [x] DANet
+- [x] OCNet
 
 ## Performance
 
@@ -16,11 +18,13 @@ Here, we using train (10582), val (1449), test (1456) as most paper used. (More 
 
 - Base Size 540, Crop Size 480
 
-|   Model   |   backbone    |   Paper    | OHEM | aux  | dilated | JPU  | Epoch | val (crop)  |     val     |
-| :-------: | :-----------: | :--------: | :--: | :--: | :-----: | :--: | :---: | :---------: | :---------: |
-|    FCN    | ResNet101-v1s |     /      |  ✗   |  ✓   |    ✗    |  ✓   |  50   | 94.54/78.31 | 94.50/76.89 |
-|  PSPNet   | ResNet101-v1s |     /      |  ✗   |  ✓   |    ✓    |  ✗   |  50   | 94.87/80.13 | 94.88/78.57 |
-| DeepLabv3 | ResNet101-v1s | no / 77.02 |  ✗   |  ✓   |    ✗    |  ✓   |  50   | 95.17/81.00 | 94.81/78.75 |
+|   Model    |   backbone    |   Paper    | OHEM | aux  | dilated | JPU  | Epoch |                          val (crop)                          |     val     |
+| :--------: | :-----------: | :--------: | :--: | :--: | :-----: | :--: | :---: | :----------------------------------------------------------: | :---------: |
+|    FCN     | ResNet101-v1s |     /      |  ✗   |  ✓   |    ✗    |  ✓   |  50   | [94.54/78.31](https://drive.google.com/open?id=1-FF5BUSB9hNCyldC1nV35LeWLSQFa9Jl) | 94.50/76.89 |
+|   PSPNet   | ResNet101-v1s |     /      |  ✗   |  ✓   |    ✓    |  ✗   |  50   |                         94.87/80.13                          | 94.88/78.57 |
+| DeepLabv3  | ResNet101-v1s | no / 77.02 |  ✗   |  ✓   |    ✗    |  ✓   |  50   | [95.17/81.00](https://drive.google.com/open?id=1R0C6qwCxOLztps4odVWLiZpe57n5TuDX) | 94.81/78.75 |
+|   DANet    | ResNet101-v1s |     /      |      |      |         |      |       |                                                              |             |
+| OCNet-Base | ResNet101-v1s |     /      |  ✗   |  ✓   |    ✗    |  ✓   |  50   | [94.91/80.33](https://drive.google.com/open?id=15gs_gzgAT_hciPgwm12G_MRMi0VZg9Gb) | 94.86/79.07 |
 
 > 1. the metric is `pixAcc/mIoU`
 > 2. `aux_weight=0.5`
@@ -46,7 +50,7 @@ Here, we only using fine train (2975), val (500) as most paper used. (More detai
 Demo of segmentation of a given image.  (Please download pre-trained model to `~/.torch/models` first. --- If you put pre-trained model to other folder, please change the `--root`)
 
 ```shell
-$ python demo_segmentation_pil.py [--model deeplab_resnet101_ade] [--input-pic <image>.jpg] [--cuda] [--aux] [--jpu]
+$ python demo_segmentation_pil.py [--model deeplab_resnet101_ade] [--input-pic <image>.jpg] [--cuda true] [--aux true] [--jpu false] [--dilated false]
 ```
 
 > Note：
@@ -59,7 +63,7 @@ $ python demo_segmentation_pil.py [--model deeplab_resnet101_ade] [--input-pic <
 The default data root is `~/.torch/datasets` (You can download dataset and build a soft-link to it)
 
 ```shell
-$ python eval_segmentation_pil.py [--model_name fcn_resnet101_voc] [--dataset pascal_paper] [--split val] [--mode testval|val] [--base-size 540] [--crop-size 480] [--aux] [--jpu] [--cuda]
+$ python eval_segmentation_pil.py [--model_name fcn_resnet101_voc] [--dataset pascal_paper] [--split val] [--mode testval|val] [--base-size 540] [--crop-size 480] [--aux true] [--jpu true] [--dilated false] [--cuda true]
 ```
 
 > Note：
@@ -75,7 +79,7 @@ Recommend to using distributed training.
 
 ```shell
 $ export NGPUS=4
-$ python -m torch.distributed.launch --nproc_per_node=$NGPUS train_segmentation_pil.py [--model fcn] [--backbone resnet101] [--dataset pascal_voc] [--batch-size 8] [--base-size 540] [--crop-size 480] [--aux] [--jpu] [--log-step 10]
+$ python -m torch.distributed.launch --nproc_per_node=$NGPUS train_segmentation_pil.py [--model fcn] [--backbone resnet101] [--dataset pascal_voc] [--batch-size 8] [--base-size 540] [--crop-size 480] [--aux true] [--jpu true] [--dilated false] [--log-step 10]
 ```
 
 > Our training results' setting can see [train.sh](scripts/train.sh)
@@ -118,12 +122,3 @@ Your can make a soft link to `.torch/datasets/citys`
 | resnet50-v1s                                                 | resnet101-v1s                                                |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [GoogleDrive](https://drive.google.com/open?id=1Mx_SIv1o1qjRz1tqEc-ggQ_MtZKQT3ET) | [GoogleDrive](https://drive.google.com/open?id=1pA_tN2MFi-7J5n1og10kDnV8raphM3V-) |
-
-#### Trained Model
-
-| fcn_resnet101_voc     | fcn_resnet101_citys                                          | psp_resnet101_voc | psp_resnet101_citys |
-| --------------------- | ------------------------------------------------------------ | ----------------- | ------------------- |
-|                       |                                                              |                   |                     |
-| deeplab_resnet101_voc | deeplab_resnet101_citys                                      |                   |                     |
-|                       | [GoogleDrive](https://drive.google.com/open?id=1MMxHSXDbSOLSR0MZAJ_OQNYkhRFmGjJg) |                   |                     |
-

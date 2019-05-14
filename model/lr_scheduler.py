@@ -63,4 +63,4 @@ class WarmupPolyLR(_LRScheduler):
 
 
 if __name__ == '__main__':
-    optim = WarmupCosineLR()
+    optim = WarmupPolyLR()

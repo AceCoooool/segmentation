@@ -2,14 +2,79 @@
 import os
 import math
 import torch
+from torch import nn
 import torch.nn.functional as F
 
 from model.seg_models.segbase import SegBaseModel
-from model.module.basic import _FCNHead, _DeepLabHead
+from model.module.basic import _FCNHead
 
 __all__ = ['DeepLabV3', 'get_deeplab',
            'get_deeplab_resnet101_voc',
            'get_deeplab_resnet101_citys', ]
+
+
+def _ASPPConv(in_channels, out_channels, atrous_rate):
+    return nn.Sequential(nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=atrous_rate,
+                                   dilation=atrous_rate, bias=False),
+                         nn.BatchNorm2d(out_channels), nn.ReLU(inplace=True))
+
+
+class _AsppPooling(nn.Module):
+    def __init__(self, in_channels, out_channels, height=60, width=60):
+        super(_AsppPooling, self).__init__()
+        self.gap = list()
+        self._up_kwargs = (height, width)
+        self.gap.append(nn.AdaptiveAvgPool2d((1, 1)))
+        self.gap.append(nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False))
+        self.gap.append(nn.BatchNorm2d(out_channels))
+        self.gap.append(nn.ReLU(inplace=True))
+        self.gap = nn.Sequential(*self.gap)
+
+    def forward(self, x):
+        pool = self.gap(x)
+        return F.interpolate(pool, self._up_kwargs, mode='bilinear', align_corners=True)
+
+
+class _ASPP(nn.Module):
+    def __init__(self, in_channels, atrous_rates, height=60, width=60):
+        super(_ASPP, self).__init__()
+        out_channels = 256
+        self.b0 = list()
+        self.b0.append(nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False))
+        self.b0.append(nn.BatchNorm2d(out_channels))
+        self.b0.append(nn.ReLU(inplace=True))
+        self.b0 = nn.Sequential(*self.b0)
+
+        rate1, rate2, rate3 = tuple(atrous_rates)
+        self.b1 = _ASPPConv(in_channels, out_channels, rate1)
+        self.b2 = _ASPPConv(in_channels, out_channels, rate2)
+        self.b3 = _ASPPConv(in_channels, out_channels, rate3)
+        self.b4 = _AsppPooling(in_channels, out_channels, height=height, width=width)
+
+        self.project = nn.Sequential(nn.Conv2d(5 * out_channels, out_channels, kernel_size=1, bias=False),
+                                     nn.BatchNorm2d(out_channels), nn.ReLU(inplace=True),
+                                     nn.Dropout(0.5))
+
+    def forward(self, x):
+        a0 = self.b0(x)
+        a1 = self.b1(x)
+        a2 = self.b2(x)
+        a3 = self.b3(x)
+        a4 = self.b4(x)
+        return self.project(torch.cat([a0, a1, a2, a3, a4], 1))
+
+
+class _DeepLabHead(nn.Module):
+    def __init__(self, nclass, **kwargs):
+        super(_DeepLabHead, self).__init__()
+        self.aspp = _ASPP(2048, [12, 24, 36], **kwargs)
+        self.block = nn.Sequential(nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+                                   nn.BatchNorm2d(256), nn.ReLU(inplace=True), nn.Dropout(0.1),
+                                   nn.Conv2d(256, nclass, kernel_size=1))
+
+    def forward(self, x):
+        x = self.aspp(x)
+        return self.block(x)
 
 
 class DeepLabV3(SegBaseModel):

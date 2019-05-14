@@ -1,0 +1,24 @@
+2019-05-14 18:58:17,830 Segmentation INFO: Using 1 GPUs
+2019-05-14 18:58:17,830 Segmentation INFO: Namespace(aux=True, aux_weight=0.5, backbone='resnet101', base_size=540, batch_size=1, crop_size=480, dataset='pascal_voc', device='cuda', dilated=False, distributed=False, dtype='float32', epochs=50, eval_epochs=10, init_method='env://', jpu=True, local_rank=0, log_step=1, lr=0.000125, model='danet', model_zoo=None, momentum=0.9, no_cuda=False, num_gpus=1, ohem=False, resume=None, save_dir='/home/ace/cbb/GitOwn/segmentation/scripts', save_epoch=10, skip_eval=False, start_epoch=0, test_batch_size=1, train_split='train', warmup_factor=0.3333333333333333, warmup_iters=200, weight_decay=0.0001, workers=4)
+2019-05-14 18:58:20,449 Segmentation INFO: Start training, total epochs  50 = total iteration: 529100
+2019-05-14 18:58:27,975 Segmentation INFO: Iteration 000001 , Lr: 0.00004, Cost: 7.52s, Eta: 46 days, 0:48:22, total_loss: 4.441, loss: 4.441
+2019-05-14 18:58:28,344 Segmentation INFO: Iteration 000002 , Lr: 0.00004, Cost: 0.35s, Eta: 24 days, 2:31:52, total_loss: 4.402, loss: 4.402
+2019-05-14 18:58:28,714 Segmentation INFO: Iteration 000003 , Lr: 0.00004, Cost: 0.35s, Eta: 16 days, 19:49:11, total_loss: 4.392, loss: 4.392
+2019-05-14 18:58:29,084 Segmentation INFO: Iteration 000004 , Lr: 0.00004, Cost: 0.35s, Eta: 13 days, 4:26:25, total_loss: 4.375, loss: 4.375
+2019-05-14 18:58:29,455 Segmentation INFO: Iteration 000005 , Lr: 0.00004, Cost: 0.35s, Eta: 11 days, 0:04:18, total_loss: 4.396, loss: 4.396
+2019-05-14 18:58:29,839 Segmentation INFO: Iteration 000006 , Lr: 0.00004, Cost: 0.36s, Eta: 9 days, 13:26:55, total_loss: 4.171, loss: 4.171
+2019-05-14 18:58:30,211 Segmentation INFO: Iteration 000007 , Lr: 0.00004, Cost: 0.35s, Eta: 8 days, 12:28:50, total_loss: 4.202, loss: 4.202
+2019-05-14 18:58:30,583 Segmentation INFO: Iteration 000008 , Lr: 0.00004, Cost: 0.35s, Eta: 7 days, 17:46:22, total_loss: 4.567, loss: 4.567
+2019-05-14 18:58:30,955 Segmentation INFO: Iteration 000009 , Lr: 0.00005, Cost: 0.35s, Eta: 7 days, 3:12:09, total_loss: 4.183, loss: 4.183
+2019-05-14 18:58:31,326 Segmentation INFO: Iteration 000010 , Lr: 0.00005, Cost: 0.35s, Eta: 6 days, 15:32:13, total_loss: 4.420, loss: 4.420
+2019-05-14 18:58:31,699 Segmentation INFO: Iteration 000011 , Lr: 0.00005, Cost: 0.35s, Eta: 6 days, 6:00:31, total_loss: 3.715, loss: 3.715
+2019-05-14 18:58:32,071 Segmentation INFO: Iteration 000012 , Lr: 0.00005, Cost: 0.35s, Eta: 5 days, 22:03:42, total_loss: 4.339, loss: 4.339
+2019-05-14 18:58:32,443 Segmentation INFO: Iteration 000013 , Lr: 0.00005, Cost: 0.35s, Eta: 5 days, 15:20:50, total_loss: 3.619, loss: 3.619
+2019-05-14 18:58:32,816 Segmentation INFO: Iteration 000014 , Lr: 0.00005, Cost: 0.35s, Eta: 5 days, 9:35:23, total_loss: 3.457, loss: 3.457
+2019-05-14 18:58:33,188 Segmentation INFO: Iteration 000015 , Lr: 0.00005, Cost: 0.35s, Eta: 5 days, 4:35:08, total_loss: 3.318, loss: 3.318
+2019-05-14 18:58:33,558 Segmentation INFO: Iteration 000016 , Lr: 0.00005, Cost: 0.35s, Eta: 5 days, 0:12:28, total_loss: 2.975, loss: 2.975
+2019-05-14 18:58:33,932 Segmentation INFO: Iteration 000017 , Lr: 0.00005, Cost: 0.35s, Eta: 4 days, 20:21:48, total_loss: 3.669, loss: 3.669
+2019-05-14 18:58:34,306 Segmentation INFO: Iteration 000018 , Lr: 0.00005, Cost: 0.35s, Eta: 4 days, 16:57:44, total_loss: 3.356, loss: 3.356
+2019-05-14 18:58:34,679 Segmentation INFO: Iteration 000019 , Lr: 0.00005, Cost: 0.35s, Eta: 4 days, 13:53:27, total_loss: 4.514, loss: 4.514
+2019-05-14 18:58:35,050 Segmentation INFO: Iteration 000020 , Lr: 0.00005, Cost: 0.35s, Eta: 4 days, 11:07:37, total_loss: 5.216, loss: 5.216
+2019-05-14 18:58:35,425 Segmentation INFO: Iteration 000021 , Lr: 0.00005, Cost: 0.35s, Eta: 4 days, 8:38:50, total_loss: 3.322, loss: 3.322

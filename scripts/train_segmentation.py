@@ -27,7 +27,7 @@ def parse_args():
     """Training Options for Segmentation Experiments"""
     parser = argparse.ArgumentParser(description='PyTorch Segmentation')
     # model and dataset
-    parser.add_argument('--model', type=str, default='fcn',
+    parser.add_argument('--model', type=str, default='danet',
                         help='model name (default: fcn)')
     parser.add_argument('--backbone', type=str, default='resnet101',
                         help='backbone name (default: resnet50)')
@@ -42,15 +42,15 @@ def parse_args():
     parser.add_argument('--train-split', type=str, default='train',
                         help='dataset train split (default: train)')
     # training hyper params
-    parser.add_argument('--aux', action='store_true', default=False,
+    parser.add_argument('--aux', type=ptutil.str2bool, default='true',
                         help='Auxiliary loss')
     parser.add_argument('--aux-weight', type=float, default=0.5,
                         help='auxiliary loss weight')
-    parser.add_argument('--dilated', action='store_true', default=False,
+    parser.add_argument('--dilated', type=ptutil.str2bool, default='false',
                         help='Using dilated conv in backbone')
-    parser.add_argument('--jpu', action='store_true', default=False,
+    parser.add_argument('--jpu', type=ptutil.str2bool, default='true',
                         help='Using jpu in backbone')
-    parser.add_argument('--ohem', action='store_true', default=False,
+    parser.add_argument('--ohem', type=ptutil.str2bool, default='false',
                         help='whether using ohem loss')
     parser.add_argument('--epochs', type=int, default=-1, metavar='N',
                         help='number of epochs to train (default: 50)')
@@ -68,19 +68,16 @@ def parse_args():
                         metavar='M', help='momentum (default: 0.9)')
     parser.add_argument('--weight-decay', type=float, default=1e-4,
                         metavar='M', help='w-decay (default: 1e-4)')
-    parser.add_argument('--no-wd', action='store_true',
-                        help='whether to remove weight decay on bias, \
-                        and beta/gamma for batchnorm layers.')
     parser.add_argument('--warmup-iters', type=int, default=200,  # 500
-                        help='warmup epochs')
+                        help='warmup iterations')
     parser.add_argument('--warmup-factor', type=float, default=1.0 / 3,
                         help='warm up start lr=warmup_factor*lr')
     parser.add_argument('--eval-epochs', type=int, default=10,
                         help='validate interval')
-    parser.add_argument('--skip-eval', action='store_true', default=False,
-                        help='validate interval')
+    parser.add_argument('--skip-eval', type=ptutil.str2bool, default='False',
+                        help='whether to skip evaluation')
     # cuda and logging
-    parser.add_argument('--no-cuda', action='store_true', default=False,
+    parser.add_argument('--no-cuda', type=ptutil.str2bool, default='False',
                         help='disables CUDA training')
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--init-method', type=str, default="env://")
@@ -276,7 +273,7 @@ class Trainer(object):
             # if i == 10: break
             image, target = image.to(self.device), target.to(self.device)
             with torch.no_grad():
-                outputs = self.net(image)[0]
+                outputs = model(image)[0]
             self.metric.update(target, outputs)
         return self.metric
 

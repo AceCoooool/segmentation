@@ -35,21 +35,22 @@ def parse_args():
                         help='base image size')
     parser.add_argument('--crop-size', type=int, default=480,  # 768
                         help='crop image size')
-    parser.add_argument('--multi', action='store_true', default=False,
+
+    parser.add_argument('--multi', type=ptutil.str2bool, default='false',
                         help='whether using multiple scale evaluate')
-    parser.add_argument('--aux', action='store_true', default=False,  # TODO: unnecessary in eval
+    parser.add_argument('--aux', type=ptutil.str2bool, default='true',
                         help='whether using aux loss')
-    parser.add_argument('--dilated', action='store_true', default=False,
+    parser.add_argument('--dilated', type=ptutil.str2bool, default='false',
                         help='whether using dilated in backbone')
-    parser.add_argument('--jpu', action='store_true', default=False,
+    parser.add_argument('--jpu', type=ptutil.str2bool, default='true',
                         help='whether using JPU after backbone')
-    parser.add_argument('--root', type=str, default=os.path.expanduser('~/.torch/models'),
-                        help='Default Pre-trained model root.')
-    # parser.add_argument('--root', type=str, default='/home/ace/cbb/own/pretrained/seg',
+    # parser.add_argument('--root', type=str, default=os.path.expanduser('~/.torch/models'),
     #                     help='Default Pre-trained model root.')
+    parser.add_argument('--root', type=str, default='/home/ace/cbb/own/pretrained/seg_jpu',
+                        help='Default Pre-trained model root.')
 
     # device
-    parser.add_argument('--cuda', action='store_true', default=True,
+    parser.add_argument('--cuda', type=ptutil.str2bool, default='true',
                         help='Training with GPUs.')
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--init-method', type=str, default="env://")

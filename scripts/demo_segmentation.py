@@ -11,27 +11,29 @@ from torchvision import transforms
 cur_path = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(cur_path, '..'))
 from model.model_zoo import get_model
-from utils.visual import get_color_pallete
+import utils as ptutil
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Predict ImageNet labels from a given image')
+    parser = argparse.ArgumentParser(description='Demo for segmentation from a given image')
     parser.add_argument('--model', type=str, default='fcn_resnet101_voc',
                         help='name of the model to use')
     parser.add_argument('--saved-params', type=str, default='',
                         help='path to the saved model parameters')
-    parser.add_argument('--cuda', action='store_true', default=True,
+    parser.add_argument('--cuda', type=ptutil.str2bool, default='true',
                         help='demo with GPU')
     parser.add_argument('--input-pic', type=str, default=None,
                         help='path to the input picture')
     parser.add_argument('--root', type=str, default=os.path.expanduser('~/.torch/models'),
                         help='Default pre-trained mdoel root.')
+    # parser.add_argument('--root', type=str, default='/home/ace/cbb/own/pretrained/seg_jpu',
+    #                     help='Default pre-trained mdoel root.')
 
-    parser.add_argument('--aux', action='store_true', default=False,  # TODO: unnecessary in eval
+    parser.add_argument('--aux', type=ptutil.str2bool, default='true',
                         help='whether using aux loss')
-    parser.add_argument('--dilated', action='store_true', default=False,
+    parser.add_argument('--dilated', type=ptutil.str2bool, default='false',
                         help='whether using dilated in backbone')
-    parser.add_argument('--jpu', action='store_true', default=False,
+    parser.add_argument('--jpu', type=ptutil.str2bool, default='true',
                         help='whether using JPU after backbone')
     opt = parser.parse_args()
     return opt
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     opt = parse_args()
     device = torch.device('cpu')
     if opt.cuda:
-        device = torch.device('cuda:0')
+        device = torch.device('cuda')
     # Load Model
     model_name = opt.model
     pretrained = True if opt.saved_params == '' else False
@@ -67,7 +69,7 @@ if __name__ == '__main__':
 
     color_map = {'voc': 'pascal_voc', 'citys': 'citys'}
     predict = torch.argmax(output, 1).squeeze(0).cpu().numpy()
-    mask = get_color_pallete(predict, color_map[model_name.split('_')[-1]])
+    mask = ptutil.get_color_pallete(predict, color_map[model_name.split('_')[-1]])
     mask.save(os.path.join(cur_path, 'png/output.png'))
     mmask = mpimg.imread(os.path.join(cur_path, 'png/output.png'))
     plt.imshow(mmask)

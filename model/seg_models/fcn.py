@@ -20,9 +20,9 @@ class FCN(SegBaseModel):
                  pretrained_base=True, base_size=520, crop_size=480, **kwargs):
         super(FCN, self).__init__(nclass, aux, backbone, base_size=base_size, crop_size=crop_size,
                                   dilated=dilated, jpu=jpu, pretrained_base=pretrained_base, **kwargs)
-        self.head = _FCNHead(2048, nclass, **kwargs)
+        self.head = _FCNHead(2048, nclass)
         if self.aux:
-            self.auxlayer = _FCNHead(1024, nclass, **kwargs)
+            self.auxlayer = _FCNHead(1024, nclass)
         self.__setattr__('others', ['head', 'auxlayer'] if aux else ['head'])
 
     def forward(self, x):
