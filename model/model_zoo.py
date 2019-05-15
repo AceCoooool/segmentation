@@ -2,6 +2,8 @@ from model.backbone.resnetv1b import *
 from model.seg_models.fcn import *
 from model.seg_models.pspnet import *
 from model.seg_models.deeplabv3 import *
+from model.seg_models.danet import *
+from model.seg_models.ocnet import *
 
 __all__ = ['get_model', 'get_model_list']
 
@@ -18,6 +20,8 @@ _models = {
     # deeplab
     'deeplab_resnet101_voc': get_deeplab_resnet101_voc,
     'deeplab_resnet101_citys': get_deeplab_resnet101_citys,
+    # danet
+    'danet_resnet101_voc': get_danet_resnet101_voc,
 }
 
 

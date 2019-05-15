@@ -27,7 +27,7 @@ def parse_args():
     """Training Options for Segmentation Experiments"""
     parser = argparse.ArgumentParser(description='PyTorch Segmentation')
     # model and dataset
-    parser.add_argument('--model', type=str, default='danet',
+    parser.add_argument('--model', type=str, default='ocnet',
                         help='model name (default: fcn)')
     parser.add_argument('--backbone', type=str, default='resnet101',
                         help='backbone name (default: resnet50)')
@@ -35,12 +35,13 @@ def parse_args():
                         help='dataset name (default: ade20k)')
     parser.add_argument('--workers', '-j', type=int, default=4,
                         metavar='N', help='dataloader threads')
-    parser.add_argument('--base-size', type=int, default=540,
+    parser.add_argument('--base-size', type=int, default=200,  # 540, 1024
                         help='base image size')
-    parser.add_argument('--crop-size', type=int, default=480,  # 768
+    parser.add_argument('--crop-size', type=int, default=200,  # 480, 768
                         help='crop image size')
     parser.add_argument('--train-split', type=str, default='train',
                         help='dataset train split (default: train)')
+    parser.add_argument('--oc', type=str, default='base', help='oc type of ocnet')
     # training hyper params
     parser.add_argument('--aux', type=ptutil.str2bool, default='true',
                         help='Auxiliary loss')
@@ -56,7 +57,7 @@ def parse_args():
                         help='number of epochs to train (default: 50)')
     parser.add_argument('--start_epoch', type=int, default=0,
                         metavar='N', help='start epochs (default:0)')
-    parser.add_argument('--batch-size', type=int, default=1,
+    parser.add_argument('--batch-size', type=int, default=2,
                         metavar='N', help='input batch size for \
                         training (default: 16)')
     parser.add_argument('--test-batch-size', type=int, default=1,
@@ -148,10 +149,11 @@ class Trainer(object):
         if args.model_zoo is not None:
             self.net = get_model(args.model_zoo, pretrained=True)
         else:
+            kwargs = {'oc': args.oc} if args.model == 'ocnet' else {}
             self.net = get_segmentation_model(model=args.model, dataset=args.dataset,
                                               backbone=args.backbone, aux=args.aux,
                                               dilated=args.dilated, jpu=args.jpu,
-                                              crop_size=args.crop_size)
+                                              crop_size=args.crop_size, **kwargs)
         if args.distributed:
             self.net = torch.nn.SyncBatchNorm.convert_sync_batchnorm(self.net)
         self.net.to(self.device)

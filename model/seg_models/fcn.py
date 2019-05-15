@@ -40,7 +40,7 @@ class FCN(SegBaseModel):
         return tuple(outputs)
 
 
-def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False,
+def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False, jpu=False,
             root=os.path.expanduser('~/.torch/models'), pretrained_base=True, **kwargs):
     acronyms = {
         'pascal_voc': 'voc',
@@ -49,12 +49,13 @@ def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     from data import datasets
     # infer number of classes
     model = FCN(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base,
-                **kwargs)
+                jpu=jpu, **kwargs)
     if pretrained:
         from model.model_store import get_model_file
-        model.load_state_dict(torch.load(get_model_file(
-            'fcn_%s_%s' % (backbone, acronyms[dataset]), root=root)))
-    return model
+        name = 'fcn_%s_%s' % (backbone, acronyms[dataset])
+        name = name + '_jpu' if jpu else name
+        model.load_state_dict(torch.load(get_model_file(name, root=root)))
+        return model
 
 
 def get_fcn_resnet50_voc(**kwargs):

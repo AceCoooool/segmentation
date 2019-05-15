@@ -54,7 +54,7 @@ class OCNet(SegBaseModel):
 
 
 def get_ocnet(dataset='pascal_voc', backbone='resnet50', oc='base', pretrained=False, pretrained_base=True,
-              root=os.path.expanduser('~/.torch/models'), **kwargs):
+              jpu=False, root=os.path.expanduser('~/.torch/models'), **kwargs):
     acronyms = {
         'pascal_voc': 'voc',
         'citys': 'citys',
@@ -62,11 +62,12 @@ def get_ocnet(dataset='pascal_voc', backbone='resnet50', oc='base', pretrained=F
     from data import datasets
     # infer number of classes
     model = OCNet(datasets[dataset].NUM_CLASS, oc=oc, backbone=backbone,
-                  pretrained_base=pretrained_base, **kwargs)
+                  jpu=jpu, pretrained_base=pretrained_base, **kwargs)
     if pretrained:
         from model.model_store import get_model_file
-        model.load_state_dict(torch.load(get_model_file('ocnet_%s_%s_%s' % (oc, backbone, acronyms[dataset]),
-                                                        root=root)))
+        name = 'ocnet_%s_%s_%s' % (oc, backbone, acronyms[dataset])
+        name = name + '_jpu' if jpu else name
+        model.load_state_dict(torch.load(get_model_file(name, root=root)))
     return model
 
 

@@ -92,26 +92,26 @@ class _DANetHead(nn.Module):
         self.conv52 = nn.Sequential(nn.Conv2d(inter_channels, inter_channels, 3, padding=1, bias=False),
                                     nn.BatchNorm2d(inter_channels), nn.ReLU(inplace=True))
 
-        self.conv6 = nn.Sequential(nn.Dropout2d(0.1, False), nn.Conv2d(512, out_channels, 1))
-        self.conv7 = nn.Sequential(nn.Dropout2d(0.1, False), nn.Conv2d(512, out_channels, 1))
+        # self.conv6 = nn.Sequential(nn.Dropout2d(0.1, False), nn.Conv2d(512, out_channels, 1))
+        # self.conv7 = nn.Sequential(nn.Dropout2d(0.1, False), nn.Conv2d(512, out_channels, 1))
         self.conv8 = nn.Sequential(nn.Dropout2d(0.1, False), nn.Conv2d(512, out_channels, 1))
 
     def forward(self, x):
         feat1 = self.conv5a(x)
         sa_feat = self.sa(feat1)
         sa_conv = self.conv51(sa_feat)
-        sa_output = self.conv6(sa_conv)
+        # sa_output = self.conv6(sa_conv)
 
         feat2 = self.conv5c(x)
         sc_feat = self.sc(feat2)
         sc_conv = self.conv52(sc_feat)
-        sc_output = self.conv7(sc_conv)
+        # sc_output = self.conv7(sc_conv)
 
         feat_sum = sa_conv + sc_conv
 
         sasc_output = self.conv8(feat_sum)
 
-        return [sasc_output, sa_output, sc_output]
+        return sasc_output
 
 
 class DANet(SegBaseModel):
@@ -129,7 +129,7 @@ class DANet(SegBaseModel):
         c3, c4 = self.base_forward(x)
 
         outputs = []
-        x = self.head(c4)[0]
+        x = self.head(c4)
         x = F.interpolate(x, self._up_kwargs, mode='bilinear', align_corners=True)
         outputs.append(x)
 
@@ -140,7 +140,7 @@ class DANet(SegBaseModel):
         return tuple(outputs)
 
 
-def get_danet(dataset='pascal_voc', backbone='resnet50', pretrained=False,
+def get_danet(dataset='pascal_voc', backbone='resnet50', pretrained=False, jpu=False,
               root=os.path.expanduser('~/.torch/models'), pretrained_base=True, **kwargs):
     acronyms = {
         'pascal_voc': 'voc',
@@ -149,11 +149,12 @@ def get_danet(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     from data import datasets
     # infer number of classes
     model = DANet(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base,
-                  **kwargs)
+                  jpu=jpu, **kwargs)
     if pretrained:
         from model.model_store import get_model_file
-        model.load_state_dict(torch.load(get_model_file('danet_%s_%s' % (backbone, acronyms[dataset]),
-                                                        root=root)))
+        name = 'danet_%s_%s' % (backbone, acronyms[dataset])
+        name = name + '_jpu' if jpu else name
+        model.load_state_dict(torch.load(get_model_file(name, root=root)))
     return model
 
 

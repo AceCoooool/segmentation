@@ -19,7 +19,7 @@ from utils.metric_seg import SegmentationMetric
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Eval Segmentation.')
-    parser.add_argument('--model_name', type=str, default='fcn_resnet101_voc',
+    parser.add_argument('--model_name', type=str, default='danet_resnet101_voc',
                         help="Base network name")
     parser.add_argument('--batch-size', type=int, default=1,
                         help='Training mini-batch size')
